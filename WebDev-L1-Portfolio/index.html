@@ -1347,6 +1347,212 @@
             font-weight: 600;
         }
 
+        /* Visual 5: Stitch Footwear — Premium Product Showcase */
+        .footwear-product-card {
+            background: linear-gradient(145deg, #FFFFFF 0%, #FAF7FF 100%);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 1.5rem 1.5rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footwear-product-card::before {
+            content: "";
+            position: absolute;
+            top: -40px;
+            right: -40px;
+            width: 180px;
+            height: 180px;
+            background: radial-gradient(circle, rgba(109, 59, 143, 0.10) 0%, transparent 70%);
+            pointer-events: none;
+        }
+
+        .footwear-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .footwear-brand-label {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+            color: var(--accent);
+        }
+
+        .footwear-category-pill {
+            font-family: var(--font-mono);
+            font-size: 0.6rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--muted);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.2rem 0.6rem;
+            border-radius: var(--radius-full);
+        }
+
+        .footwear-shoe-stage {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 1rem 0 0.5rem;
+            position: relative;
+        }
+
+        .footwear-shoe-svg {
+            width: 160px;
+            height: 90px;
+            filter: drop-shadow(0 12px 24px rgba(109, 59, 143, 0.20));
+            animation: shoe-float 3.5s ease-in-out infinite;
+        }
+
+        @keyframes shoe-float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(-4deg);
+            }
+
+            50% {
+                transform: translateY(-8px) rotate(-4deg);
+            }
+        }
+
+        .footwear-glow-circle {
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 20px;
+            background: radial-gradient(ellipse, rgba(109, 59, 143, 0.18) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: glow-pulse 3.5s ease-in-out infinite;
+        }
+
+        @keyframes glow-pulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: translateX(-50%) scaleX(0.85);
+            }
+
+            50% {
+                opacity: 1;
+                transform: translateX(-50%) scaleX(1.1);
+            }
+        }
+
+        .footwear-product-info {
+            margin-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+        }
+
+        .footwear-product-name {
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            color: var(--text);
+            line-height: 1.2;
+        }
+
+        .footwear-product-sub {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            color: var(--muted);
+            margin-top: 0.15rem;
+        }
+
+        .footwear-price-tag {
+            font-size: 1.125rem;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: -0.02em;
+        }
+
+        .footwear-meta-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 0.85rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+
+        .footwear-rating {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+            font-family: var(--font-mono);
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .footwear-stars {
+            display: flex;
+            gap: 2px;
+        }
+
+        .footwear-stars span {
+            font-size: 0.7rem;
+            color: #D4A200;
+        }
+
+        .footwear-add-cart-btn {
+            font-family: var(--font-mono);
+            font-size: 0.6875rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: #FFFFFF;
+            background: var(--accent);
+            border: none;
+            padding: 0.45rem 0.9rem;
+            border-radius: var(--radius-full);
+            cursor: default;
+            box-shadow: 0 4px 14px var(--accent-glow);
+            transition: transform var(--transition-fast);
+        }
+
+        .project-card:hover .footwear-add-cart-btn {
+            transform: translateY(-2px);
+        }
+
+        .footwear-nav-dots {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin-top: 0.85rem;
+        }
+
+        .footwear-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--border);
+        }
+
+        .footwear-dot.active {
+            width: 18px;
+            border-radius: 3px;
+            background: var(--accent);
+        }
+
         /* --------------------------------------------------
        8. RESEARCH & EXPERIMENTATION
     -------------------------------------------------- */
@@ -2529,7 +2735,7 @@
                                 <span class="tech-tag">MongoDB</span>
                             </div>
                             <div class="project-links">
-                                <a class="project-btn-primary" href="https://github.com/sojol-bro"
+                                <a class="project-btn-primary" href="https://assembly-ai-voice-agent.vercel.app"
                                     rel="noopener noreferrer" target="_blank">
                                     <span>View Project</span>
                                     <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5"
@@ -2538,7 +2744,8 @@
                                         <polyline points="12 5 19 12 12 19"></polyline>
                                     </svg>
                                 </a>
-                                <a class="project-btn-secondary" href="https://github.com/sojol-bro"
+                                <a class="project-btn-secondary"
+                                    href="https://github.com/sojol-bro/Assembly-AI-Voice-Agent.git"
                                     rel="noopener noreferrer" target="_blank">
                                     <span>GitHub ↗</span>
                                 </a>
@@ -2587,7 +2794,8 @@
                                 <span class="tech-tag">REST API</span>
                             </div>
                             <div class="project-links">
-                                <a class="project-btn-primary" href="https://github.com/sojol-bro"
+                                <a class="project-btn-primary"
+                                    href="https://6abf99ef768cd66612c58973--mio-online.netlify.app/"
                                     rel="noopener noreferrer" target="_blank">
                                     <span>View Project</span>
                                     <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5"
@@ -2596,7 +2804,7 @@
                                         <polyline points="12 5 19 12 12 19"></polyline>
                                     </svg>
                                 </a>
-                                <a class="project-btn-secondary" href="https://github.com/sojol-bro"
+                                <a class="project-btn-secondary" href="https://github.com/sojol-bro/E-commerce.git"
                                     rel="noopener noreferrer" target="_blank">
                                     <span>GitHub ↗</span>
                                 </a>
@@ -2620,6 +2828,121 @@
                                 <div class="commerce-db-row" style="border:none; padding-bottom:0;">
                                     <span>QUERY LATENCY</span>
                                     <span style="font-weight:700; color:var(--accent);">18ms AVG</span>
+                                </div>
+                            </div>
+                        </div>
+                    </article>
+                    <!-- PROJECT 05: E-COMMERCE /  APP — STITCH FOOTWEAR -->
+                    <article class="project-card reveal">
+                        <div class="project-info">
+                            <div class="project-meta-top">
+                                <span class="project-number">05 //</span>
+                                <span class="project-category-tag">E-COMMERCE / MOBILE APP</span>
+                            </div>
+                            <h3 class="project-title">Stitch Footwear</h3>
+                            <p class="project-desc">
+                                A modern footwear e-commerce application designed for browsing products, exploring
+                                collections, viewing product details, managing a shopping cart, and completing a smooth
+                                online shopping experience.
+                            </p>
+                            <div class="project-tech-tags">
+                                <span class="tech-tag">React Native</span>
+                                <span class="tech-tag">Expo</span>
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">Supabase</span>
+                                <span class="tech-tag">PostgreSQL</span>
+                            </div>
+                            <div class="project-links">
+                                <a class="project-btn-primary" href="https://stitch-footwear-sojol-bro-woad.vercel.app"
+                                    rel="noopener noreferrer" target="_blank">
+                                    <span>View Project</span>
+                                    <svg fill="none" height="14" stroke="currentColor" stroke-width="2.5"
+                                        viewbox="0 0 24 24" width="14">
+                                        <line x1="5" x2="19" y1="12" y2="12"></line>
+                                        <polyline points="12 5 19 12 12 19"></polyline>
+                                    </svg>
+                                </a>
+                                <a class="project-btn-secondary" href="https://github.com/sojol-bro/Stitch-Footwear"
+                                    rel="noopener noreferrer" target="_blank">
+                                    <span>GitHub ↗</span>
+                                </a>
+                            </div>
+                        </div>
+                        <!-- Visual: Premium Footwear Product Showcase -->
+                        <div class="project-visual-frame">
+                            <div class="footwear-product-card">
+                                <!-- Card Header -->
+                                <div class="footwear-card-header">
+                                    <span class="footwear-brand-label">Stitch Footwear</span>
+                                    <span class="footwear-category-pill">Premium Sneakers</span>
+                                </div>
+                                <!-- Shoe Visual Stage -->
+                                <div class="footwear-shoe-stage">
+                                    <div class="footwear-glow-circle"></div>
+                                    <svg class="footwear-shoe-svg" viewBox="0 0 200 110" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <!-- Sole -->
+                                        <ellipse cx="105" cy="95" rx="85" ry="12" fill="#E8E0F0" />
+                                        <!-- Main body -->
+                                        <path
+                                            d="M30 88 Q25 70 40 58 Q60 42 90 38 L140 35 Q160 34 172 48 Q182 60 178 72 Q170 85 155 88 Z"
+                                            fill="#6D3B8F" />
+                                        <!-- Midsole stripe -->
+                                        <path d="M28 88 Q105 96 178 88 Q178 96 165 100 Q105 106 35 100 Z"
+                                            fill="#F0EDE6" />
+                                        <!-- Toe box highlight -->
+                                        <path d="M40 58 Q55 46 80 42 Q70 52 60 64 Q50 70 38 72 Z" fill="#8B5BB0"
+                                            opacity="0.7" />
+                                        <!-- Upper panel lines -->
+                                        <path d="M90 38 Q95 55 92 78" stroke="#B79BC7" stroke-width="1"
+                                            stroke-dasharray="3,2" />
+                                        <path d="M115 36 Q118 53 114 78" stroke="#B79BC7" stroke-width="1"
+                                            stroke-dasharray="3,2" />
+                                        <path d="M140 35 Q141 52 136 78" stroke="#B79BC7" stroke-width="1"
+                                            stroke-dasharray="3,2" />
+                                        <!-- Laces -->
+                                        <path d="M85 46 Q100 43 115 46" stroke="#FFFFFF" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                        <path d="M83 53 Q100 50 117 53" stroke="#FFFFFF" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                        <path d="M82 60 Q100 57 118 60" stroke="#FFFFFF" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                        <path d="M83 67 Q101 64 119 67" stroke="#FFFFFF" stroke-width="1.5"
+                                            stroke-linecap="round" />
+                                        <!-- Tongue tab -->
+                                        <path d="M88 38 Q100 32 112 38 L110 50 Q100 44 90 50 Z" fill="#7F4FA3" />
+                                        <!-- Heel counter -->
+                                        <path d="M155 42 Q172 50 178 72 Q170 60 155 55 Z" fill="#5A2E78"
+                                            opacity="0.5" />
+                                        <!-- Stitch accent mark -->
+                                        <circle cx="165" cy="62" r="5" fill="#FFFFFF" opacity="0.9" />
+                                        <text x="163" y="65.5" font-size="7" fill="#6D3B8F" font-weight="800"
+                                            font-family="sans-serif">S</text>
+                                    </svg>
+                                </div>
+                                <!-- Product Info Row -->
+                                <div class="footwear-product-info">
+                                    <div>
+                                        <div class="footwear-product-name">STITCH AIR PRO</div>
+                                        <div class="footwear-product-sub">Limited Collection · 2025</div>
+                                    </div>
+                                    <div class="footwear-price-tag">$149</div>
+                                </div>
+                                <!-- Meta: Rating + Add to Cart -->
+                                <div class="footwear-meta-row">
+                                    <div class="footwear-rating">
+                                        <div class="footwear-stars">
+                                            <span>★</span><span>★</span><span>★</span><span>★</span><span>★</span>
+                                        </div>
+                                        4.9
+                                    </div>
+                                    <button class="footwear-add-cart-btn" tabindex="-1">Add to Cart</button>
+                                </div>
+                                <!-- Navigation Dots -->
+                                <div class="footwear-nav-dots">
+                                    <div class="footwear-dot active"></div>
+                                    <div class="footwear-dot"></div>
+                                    <div class="footwear-dot"></div>
                                 </div>
                             </div>
                         </div>
