@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>TEMP° — Modern Temperature Converter</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Manrope:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --background: #F5F1EA;
+            --surface: #FFFFFF;
+            --surface-soft: #ECE8E0;
+            --surface-subtle: #F9F7F3;
+            --text: #202020;
+            --muted: #858585;
+            --muted-light: #B4B0A7;
+            --accent: #7A4CFF;
+            --accent-light: #B9A4FF;
+            --accent-subtle: rgba(122, 76, 255, 0.08);
+            --accent-hover: #6739EE;
+            --border: rgba(32, 32, 32, 0.08);
+            --border-focus: rgba(122, 76, 255, 0.4);
+            --error: #D9534F;
+            --error-bg: rgba(217, 83, 79, 0.08);
+            --card-radius: 36px;
+            --item-radius: 20px;
+            --pill-radius: 9999px;
+            --shadow-sm: 0 4px 12px rgba(0, 0, 0, 0.03);
+            --shadow-main: 0 24px 64px -12px rgba(32, 28, 20, 0.08), 0 4px 16px rgba(0, 0, 0, 0.02);
+            --shadow-card: 0 10px 30px rgba(0, 0, 0, 0.03);
+            --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+            box-sizing: border-box;
+            padding-top: env(safe-area-inset-top, 0px);
+            padding-bottom: env(safe-area-inset-bottom, 0px);
+        }
+
+        html {
+            scroll-padding-top: env(safe-area-inset-top, 0px);
+        }
+
+        :root[data-theme="dark"] {
+            --background: #17151F;
+            --surface: #211F2B;
+            --surface-soft: #2A2836;
+            --surface-subtle: #1D1B26;
+            --text: #F0EDE5;
+            --muted: #9D98A8;
+            --muted-light: #6F6B7D;
+            --accent: #9B7DFF;
+            --accent-light: #C4B3FF;
+            --accent-subtle: rgba(155, 125, 255, 0.15);
+            --accent-hover: #8465F0;
+            --border: rgba(255, 255, 255, 0.08);
+            --border-focus: rgba(155, 125, 255, 0.45);
+            --error: #FF6B66;
+            --error-bg: rgba(255, 107, 102, 0.12);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            background-color: var(--background);
+            color: var(--text);
+            font-family: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.5;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        /* Ambient atmospheric background glows */
+        body::before {
+            content: '';
+            position: fixed;
+            top: -15vw;
+            right: -10vw;
+            width: 45vw;
+            height: 45vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(185, 164, 255, 0.22) 0%, rgba(245, 241, 234, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            bottom: -15vw;
+            left: -10vw;
+            width: 50vw;
+            height: 50vw;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(236, 232, 224, 0.6) 0%, rgba(245, 241, 234, 0) 70%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Accessibility reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Header */
+        .header {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 24px 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            color: var(--text);
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            font-size: 1.25rem;
+            letter-spacing: -0.04em;
+        }
+
+        .brand-badge {
+            width: 28px;
+            height: 28px;
+            background: var(--text);
+            color: var(--surface);
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.85rem;
+            font-weight: 800;
+        }
+
+        .header-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .header-btn {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border);
+            padding: 8px 18px;
+            border-radius: var(--pill-radius);
+            font-size: 0.825rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            letter-spacing: 0.04em;
+            transition: all 0.2s ease;
+        }
+
+        .header-btn:hover {
+            background: var(--surface);
+            border-color: rgba(32, 32, 32, 0.2);
+            transform: translateY(-1px);
+        }
+
+        .header-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* Main Container */
+        main {
+            flex: 1;
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px 24px 60px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Hero */
+        .hero-section {
+            text-align: center;
+            margin-bottom: 36px;
+            max-width: 780px;
+            animation: heroEntrance 0.8s var(--transition-smooth) backwards;
+        }
+
+        .pill-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: rgba(122, 76, 255, 0.08);
+            border: 1px solid rgba(122, 76, 255, 0.15);
+            border-radius: var(--pill-radius);
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--accent);
+            margin-bottom: 16px;
+        }
+
+        .pill-tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--accent);
+        }
+
+        .hero-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(2.5rem, 6.5vw, 4.75rem);
+            line-height: 0.96;
+            letter-spacing: -0.05em;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1rem, 2vw, 1.25rem);
+            color: var(--muted);
+            line-height: 1.45;
+            max-width: 580px;
+            margin: 0 auto;
+            font-weight: 400;
+        }
+
+        /* Converter Card */
+        .converter-card {
+            width: 100%;
+            max-width: 760px;
+            background: var(--surface);
+            border-radius: var(--card-radius);
+            box-shadow: var(--shadow-main);
+            padding: 44px;
+            border: 1px solid rgba(255, 255, 255, 0.9);
+            position: relative;
+            animation: cardEntrance 0.9s 0.12s var(--transition-smooth) backwards;
+            transition: box-shadow 0.3s ease;
+        }
+
+        /* Top Display / Hero numeric display inside card */
+        .input-wrapper-container {
+            background: var(--surface-subtle);
+            border-radius: 28px;
+            padding: 32px 24px 28px;
+            text-align: center;
+            position: relative;
+            border: 2px solid transparent;
+            transition: all 0.25s ease;
+            margin-bottom: 24px;
+        }
+
+        .input-wrapper-container:focus-within {
+            background: #FFFFFF;
+            border-color: var(--border-focus);
+            box-shadow: 0 12px 32px rgba(122, 76, 255, 0.09);
+        }
+
+        .input-wrapper-container.has-error {
+            border-color: var(--error);
+            background: var(--error-bg);
+        }
+
+        .input-label-tag {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: block;
+        }
+
+        .input-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+            position: relative;
+        }
+
+        .numeric-input {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(3.5rem, 9vw, 5.5rem);
+            font-weight: 800;
+            color: var(--text);
+            background: transparent;
+            border: none;
+            outline: none;
+            text-align: center;
+            width: 100%;
+            max-width: 440px;
+            letter-spacing: -0.04em;
+            line-height: 1;
+            padding: 0;
+            -moz-appearance: textfield;
+        }
+
+        .numeric-input::-webkit-outer-spin-button,
+        .numeric-input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        .numeric-input::placeholder {
+            color: var(--muted-light);
+            opacity: 0.7;
+        }
+
+        .current-unit-display {
+            font-family: 'Manrope', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.75rem);
+            font-weight: 600;
+            color: var(--accent);
+            user-select: none;
+            margin-left: -8px;
+        }
+
+        /* Error Message */
+        .error-container {
+            min-height: 22px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--error);
+            opacity: 0;
+            transform: translateY(-4px);
+            transition: all 0.25s ease;
+        }
+
+        .error-container.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .error-icon {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+        }
+
+        /* Controls Bar: Selector & Swap */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: 1fr auto;
+            gap: 14px;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .selector-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .selector-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            padding-left: 4px;
+        }
+
+        .custom-select-wrapper {
+            position: relative;
+        }
+
+        .custom-select {
+            width: 100%;
+            appearance: none;
+            -webkit-appearance: none;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 15px 48px 15px 20px;
+            border-radius: var(--item-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            outline: none;
+        }
+
+        .custom-select:hover {
+            background: #E6E1D7;
+        }
+
+        .custom-select:focus-visible {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-subtle);
+        }
+
+        .select-arrow {
+            position: absolute;
+            right: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+        }
+
+        .swap-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: var(--item-radius);
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.25s var(--transition-smooth);
+            align-self: flex-end;
+        }
+
+        .swap-btn:hover {
+            background: var(--text);
+            color: var(--surface);
+            transform: rotate(180deg);
+        }
+
+        .swap-btn:active {
+            transform: scale(0.92) rotate(180deg);
+        }
+
+        .swap-btn:focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+        }
+
+        /* Convert Button */
+        .convert-btn {
+            width: 100%;
+            background: var(--accent);
+            color: #FFFFFF;
+            border: none;
+            padding: 18px 28px;
+            border-radius: var(--item-radius);
+            font-size: 1.05rem;
+            font-weight: 700;
+            font-family: 'Manrope', sans-serif;
+            letter-spacing: 0.04em;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            transition: all 0.25s var(--transition-smooth);
+            box-shadow: 0 10px 24px rgba(122, 76, 255, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .convert-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+
+        .convert-btn:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 14px 28px rgba(122, 76, 255, 0.38);
+        }
+
+        .convert-btn:hover::after {
+            left: 100%;
+        }
+
+        .convert-btn:active {
+            transform: scale(0.985);
+            box-shadow: 0 6px 16px rgba(122, 76, 255, 0.25);
+        }
+
+        .convert-btn:focus-visible {
+            outline: 3px solid var(--accent-light);
+            outline-offset: 3px;
+        }
+
+        .btn-arrow {
+            transition: transform 0.2s ease;
+        }
+
+        .convert-btn:hover .btn-arrow {
+            transform: translateX(4px);
+        }
+
+        /* Results Section */
+        .results-section {
+            margin-top: 36px;
+            padding-top: 32px;
+            border-top: 1px solid var(--border);
+        }
+
+        .results-header-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .results-heading {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: var(--text);
+            letter-spacing: -0.02em;
+        }
+
+        .units-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .unit-card {
+            background: var(--surface-subtle);
+            border: 1.5px solid var(--border);
+            border-radius: var(--item-radius);
+            padding: 20px 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: all 0.3s var(--transition-smooth);
+            position: relative;
+            cursor: default;
+        }
+
+        .unit-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-card);
+            background: #FFFFFF;
+            border-color: rgba(32, 32, 32, 0.16);
+        }
+
+        .unit-card.is-active {
+            border-color: var(--accent);
+            background: #FFFFFF;
+            box-shadow: 0 8px 24px rgba(122, 76, 255, 0.12);
+        }
+
+        .unit-card.is-active::after {
+            content: 'INPUT SOURCE';
+            position: absolute;
+            top: -9px;
+            right: 14px;
+            background: var(--accent);
+            color: #FFFFFF;
+            font-size: 0.625rem;
+            font-weight: 800;
+            letter-spacing: 0.05em;
+            padding: 2px 7px;
+            border-radius: var(--pill-radius);
+        }
+
+        .unit-card-title {
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            color: var(--muted);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .unit-sym {
+            color: var(--muted-light);
+            font-weight: 600;
+            font-size: 0.75rem;
+        }
+
+        .unit-card-val {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            color: var(--text);
+            line-height: 1.1;
+            word-break: break-word;
+            transition: transform 0.25s ease, color 0.25s ease;
+        }
+
+        .unit-card-val.pop {
+            animation: valPop 0.35s ease;
+        }
+
+        /* Temperature Visualization Bar */
+        .viz-container {
+            background: var(--surface-soft);
+            border-radius: 20px;
+            padding: 20px 24px;
+            margin-bottom: 20px;
+        }
+
+        .viz-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 700;
+            letter-spacing: 0.06em;
+            color: var(--muted);
+            text-transform: uppercase;
+            margin-bottom: 12px;
+        }
+
+        .scale-bar-track {
+            height: 10px;
+            border-radius: var(--pill-radius);
+            background: linear-gradient(90deg, #3B82F6 0%, #06B6D4 25%, #10B981 50%, #F59E0B 75%, #EF4444 100%);
+            position: relative;
+            margin: 10px 0 16px;
+        }
+
+        .scale-marker {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #FFFFFF;
+            border: 3.5px solid var(--accent);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: left 0.4s var(--transition-smooth);
+        }
+
+        .scale-ticks {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            color: var(--muted);
+            font-weight: 600;
+        }
+
+        /* Status Indicator Badge */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: var(--surface-subtle);
+            border: 1px solid var(--border);
+            border-radius: var(--item-radius);
+            font-size: 0.925rem;
+            font-weight: 600;
+            color: var(--text);
+            transition: all 0.3s ease;
+            width: 100%;
+            justify-content: center;
+        }
+
+        .status-badge.highlight {
+            background: #FFFFFF;
+            border-color: rgba(122, 76, 255, 0.2);
+        }
+
+        .status-icon {
+            font-size: 1.15rem;
+            display: inline-block;
+            transition: transform 0.2s ease;
+        }
+
+        /* Recent Conversions Drawer */
+        .recent-section {
+            width: 100%;
+            max-width: 760px;
+            margin-top: 24px;
+            animation: cardEntrance 0.9s 0.2s var(--transition-smooth) backwards;
+        }
+
+        .recent-card {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(8px);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .recent-label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .recent-list {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .recent-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 6px 14px;
+            border-radius: var(--pill-radius);
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .recent-item:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* Absolute Zero Fact Pill */
+        .fact-pill {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 0.825rem;
+            color: var(--muted);
+            letter-spacing: 0.02em;
+        }
+
+        .fact-pill strong {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* Footer */
+        .footer {
+            width: 100%;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 32px 24px 48px;
+            text-align: center;
+            border-top: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.875rem;
+            position: relative;
+            z-index: 5;
+        }
+
+        .footer-brand {
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            color: var(--text);
+            font-size: 1rem;
+            letter-spacing: -0.02em;
+            margin-bottom: 6px;
+        }
+
+        .footer-sub {
+            margin-bottom: 8px;
+        }
+
+        .footer-meta {
+            font-size: 0.8rem;
+            color: var(--muted-light);
+        }
+
+        /* Modal for About / Info */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(32, 28, 20, 0.4);
+            backdrop-filter: blur(6px);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.25s ease;
+        }
+
+        .modal-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .modal-content {
+            background: var(--surface);
+            border-radius: 28px;
+            padding: 36px;
+            max-width: 520px;
+            width: 100%;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.15);
+            transform: scale(0.95);
+            transition: transform 0.25s var(--transition-smooth);
+        }
+
+        .modal-overlay.open .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+        }
+
+        .modal-close {
+            background: var(--surface-soft);
+            border: none;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--text);
+            transition: background 0.2s;
+        }
+
+        .modal-close:hover {
+            background: #DDD8CD;
+        }
+
+        .formula-table {
+            width: 100%;
+            margin: 16px 0;
+            font-size: 0.85rem;
+            border-collapse: collapse;
+        }
+
+        .formula-table td {
+            padding: 8px 4px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .formula-table code {
+            font-family: monospace;
+            background: var(--surface-soft);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+            font-weight: 600;
+        }
+
+        /* Keyframe Animations */
+        @keyframes heroEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(18px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes cardEntrance {
+            from {
+                opacity: 0;
+                transform: translateY(28px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes valPop {
+            0% {
+                transform: scale(1);
+            }
+
+            40% {
+                transform: scale(1.06);
+                color: var(--accent);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .converter-card {
+                padding: 28px 20px;
+                border-radius: 28px;
+            }
+
+            .units-grid {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .controls-grid {
+                grid-template-columns: 1fr auto;
+            }
+
+            .recent-card {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 16px 20px;
+            }
+
+            main {
+                padding: 12px 16px 40px;
+            }
+
+            .input-wrapper-container {
+                padding: 24px 16px 20px;
+            }
+
+            .numeric-input {
+                font-size: 3.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Top Header -->
+    <header class="header">
+        <a href="#" class="brand" aria-label="TEMP° Home">
+            <span class="brand-badge">°</span>
+            <span>TEMP°</span>
+        </a>
+        <nav class="header-nav">
+            <button class="header-btn" id="openAboutBtn" aria-haspopup="dialog" aria-expanded="false">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                </svg>
+                <span>FORMULAS</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main>
+        <!-- Hero Title -->
+        <section class="hero-section">
+            <div class="pill-tag">Precision Utility</div>
+            <h1 class="hero-title">Temperature Converter.</h1>
+            <p class="hero-subtitle">
+                Convert temperatures instantly between Celsius, Fahrenheit, and Kelvin with mathematical accuracy.
+            </p>
+        </section>
+
+        <!-- Main Converter Card -->
+        <section class="converter-card" aria-label="Temperature Converter Tool">
+
+            <!-- Primary Temperature Input Box -->
+            <div class="input-wrapper-container" id="inputContainer">
+                <label for="temperatureInput" class="input-label-tag">Temperature Value</label>
+
+                <div class="input-row">
+                    <input type="number" id="temperatureInput" name="temperature" class="numeric-input" placeholder="0"
+                        value="0" step="any" autocomplete="off" aria-describedby="errorMessage"
+                        aria-label="Enter temperature value" />
+                    <span class="current-unit-display" id="activeUnitSuffix">°C</span>
+                </div>
+
+                <!-- Real-time Validation Error Message -->
+                <div id="errorMessage" class="error-container" role="alert" aria-live="polite">
+                    <svg class="error-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="8" x2="12" y2="12"></line>
+                        <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                    </svg>
+                    <span id="errorText">Please enter a valid temperature.</span>
+                </div>
+            </div>
+
+            <!-- Controls: Selector & Swap Unit Button -->
+            <div class="controls-grid">
+                <div class="selector-group">
+                    <label for="inputUnit" class="selector-label">Convert from</label>
+                    <div class="custom-select-wrapper">
+                        <select id="inputUnit" class="custom-select">
+                            <option value="celsius">Celsius (°C)</option>
+                            <option value="fahrenheit">Fahrenheit (°F)</option>
+                            <option value="kelvin">Kelvin (K)</option>
+                        </select>
+                        <div class="select-arrow" aria-hidden="true">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="6 9 12 15 18 9"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="button" id="swapUnitBtn" class="swap-btn"
+                    title="Cycle unit (Celsius → Fahrenheit → Kelvin)" aria-label="Cycle input unit">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M7 16V4m0 0L3 8m4-4l4 4m6 4v12m0 0l4-4m-4 4l-4-4"></path>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Convert Action Button -->
+            <button type="button" id="convertBtn" class="convert-btn">
+                <span>CONVERT</span>
+                <svg class="btn-arrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+
+            <!-- Output Section -->
+            <div class="results-section" id="resultsSection">
+                <div class="results-header-row">
+                    <h2 class="results-heading">Converted Temperature</h2>
+                    <span class="pill-tag" style="margin-bottom:0">All Scales</span>
+                </div>
+
+                <!-- 3 Output Cards -->
+                <div class="units-grid" role="region" aria-label="Conversion Results">
+                    <!-- Celsius Card -->
+                    <div class="unit-card is-active" id="cardCelsius">
+                        <div class="unit-card-title">
+                            <span>Celsius</span>
+                            <span class="unit-sym">°C</span>
+                        </div>
+                        <div class="unit-card-val" id="valCelsius">0.00°C</div>
+                    </div>
+
+                    <!-- Fahrenheit Card -->
+                    <div class="unit-card" id="cardFahrenheit">
+                        <div class="unit-card-title">
+                            <span>Fahrenheit</span>
+                            <span class="unit-sym">°F</span>
+                        </div>
+                        <div class="unit-card-val" id="valFahrenheit">32.00°F</div>
+                    </div>
+
+                    <!-- Kelvin Card -->
+                    <div class="unit-card" id="cardKelvin">
+                        <div class="unit-card-title">
+                            <span>Kelvin</span>
+                            <span class="unit-sym">K</span>
+                        </div>
+                        <div class="unit-card-val" id="valKelvin">273.15 K</div>
+                    </div>
+                </div>
+
+                <!-- Visual Temperature Scale Indicator -->
+                <div class="viz-container">
+                    <div class="viz-header">
+                        <span>Cold (Absolute Zero)</span>
+                        <span>Water Freezes</span>
+                        <span>Boiling Point</span>
+                    </div>
+                    <div class="scale-bar-track">
+                        <div class="scale-marker" id="scaleMarker" style="left: 65%;"></div>
+                    </div>
+                    <div class="scale-ticks">
+                        <span>-273.15°C</span>
+                        <span>0°C</span>
+                        <span>100°C</span>
+                    </div>
+                </div>
+
+                <!-- Temperature Qualitative Interpretation -->
+                <div class="status-badge" id="statusBadge" role="status">
+                    <span class="status-icon" id="statusIcon">○</span>
+                    <span id="statusText">Moderate temperature</span>
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- Optional Recent Conversions Pill Drawer -->
+        <section class="recent-section" aria-label="Recent conversions">
+            <div class="recent-card">
+                <div class="recent-label">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    <span>Recent History</span>
+                </div>
+                <div class="recent-list" id="recentList">
+                    <span class="recent-item" data-val="0" data-unit="celsius">0°C → 32°F</span>
+                    <span class="recent-item" data-val="25" data-unit="celsius">25°C → 77°F</span>
+                    <span class="recent-item" data-val="100" data-unit="celsius">100°C → 212°F</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Absolute zero info line -->
+        <div class="fact-pill">
+            Absolute zero baseline: <strong>-273.15°C</strong> • <strong>-459.67°F</strong> • <strong>0 K</strong>
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-brand">TEMP°</div>
+        <div class="footer-sub">Simple precision temperature conversion.</div>
+        <div class="footer-meta">Celsius • Fahrenheit • Kelvin • © 2026</div>
+    </footer>
+
+    <!-- Modal for Conversion Formulas -->
+    <div class="modal-overlay" id="aboutModal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modalTitle">Scientific Conversion Formulas</h3>
+                <button class="modal-close" id="closeModalBtn" aria-label="Close dialog">&times;</button>
+            </div>
+            <p style="font-size:0.9rem; color:var(--muted); margin-bottom:12px;">
+                All operations use IEEE-754 precision rounded to two decimal points:
+            </p>
+            <table class="formula-table">
+                <tbody>
+                    <tr>
+                        <td>Celsius to Fahrenheit</td>
+                        <td><code>°F = (°C × 9/5) + 32</code></td>
+                    </tr>
+                    <tr>
+                        <td>Fahrenheit to Celsius</td>
+                        <td><code>°C = (°F − 32) × 5/9</code></td>
+                    </tr>
+                    <tr>
+                        <td>Celsius to Kelvin</td>
+                        <td><code>K = °C + 273.15</code></td>
+                    </tr>
+                    <tr>
+                        <td>Kelvin to Celsius</td>
+                        <td><code>°C = K − 273.15</code></td>
+                    </tr>
+                    <tr>
+                        <td>Fahrenheit to Kelvin</td>
+                        <td><code>K = (°F − 32) × 5/9 + 273.15</code></td>
+                    </tr>
+                    <tr>
+                        <td>Kelvin to Fahrenheit</td>
+                        <td><code>°F = (K − 273.15) × 9/5 + 32</code></td>
+                    </tr>
+                </tbody>
+            </table>
+            <div style="font-size:0.8rem; color:var(--muted); text-align:right;">
+                Absolute zero: 0 K = -273.15°C = -459.67°F
+            </div>
+        </div>
+    </div>
+
+    <!-- Vanilla JavaScript Implementation -->
+    <script>
+        (function () {
+            'use strict';
+
+            // Absolute zero constants
+            const ABSOLUTE_ZERO = {
+                celsius: -273.15,
+                fahrenheit: -459.67,
+                kelvin: 0
+            };
+
+            // DOM Elements
+            const tempInput = document.getElementById('temperatureInput');
+            const inputUnit = document.getElementById('inputUnit');
+            const swapBtn = document.getElementById('swapUnitBtn');
+            const convertBtn = document.getElementById('convertBtn');
+            const inputContainer = document.getElementById('inputContainer');
+            const activeUnitSuffix = document.getElementById('activeUnitSuffix');
+            const errorMessage = document.getElementById('errorMessage');
+            const errorText = document.getElementById('errorText');
+
+            const cardCelsius = document.getElementById('cardCelsius');
+            const cardFahrenheit = document.getElementById('cardFahrenheit');
+            const cardKelvin = document.getElementById('cardKelvin');
+
+            const valCelsius = document.getElementById('valCelsius');
+            const valFahrenheit = document.getElementById('valFahrenheit');
+            const valKelvin = document.getElementById('valKelvin');
+
+            const scaleMarker = document.getElementById('scaleMarker');
+            const statusBadge = document.getElementById('statusBadge');
+            const statusIcon = document.getElementById('statusIcon');
+            const statusText = document.getElementById('statusText');
+
+            const recentList = document.getElementById('recentList');
+            const aboutModal = document.getElementById('aboutModal');
+            const openAboutBtn = document.getElementById('openAboutBtn');
+            const closeModalBtn = document.getElementById('closeModalBtn');
+
+            let recentHistory = [
+                { val: 0, unit: 'celsius', text: '0°C → 32°F' },
+                { val: 25, unit: 'celsius', text: '25°C → 77°F' },
+                { val: 100, unit: 'celsius', text: '100°C → 212°F' }
+            ];
+
+            // Conversion calculation functions
+            function celsiusToFahrenheit(c) {
+                return (c * 9) / 5 + 32;
+            }
+
+            function fahrenheitToCelsius(f) {
+                return ((f - 32) * 5) / 9;
+            }
+
+            function celsiusToKelvin(c) {
+                return c + 273.15;
+            }
+
+            function kelvinToCelsius(k) {
+                return k - 273.15;
+            }
+
+            function fahrenheitToKelvin(f) {
+                return ((f - 32) * 5) / 9 + 273.15;
+            }
+
+            function kelvinToFahrenheit(k) {
+                return ((k - 273.15) * 9) / 5 + 32;
+            }
+
+            // Format values avoiding float artifacts
+            function formatNum(val) {
+                return (Math.round((val + Number.EPSILON) * 100) / 100).toFixed(2);
+            }
+
+            // Input Validation
+            function validateInput(rawVal, unit) {
+                const trimmed = String(rawVal).trim();
+
+                if (trimmed === '') {
+                    return { valid: false, message: 'Please enter a valid temperature.' };
+                }
+
+                const num = Number(trimmed);
+                if (Number.isNaN(num) || !Number.isFinite(num)) {
+                    return { valid: false, message: 'Please enter a valid numeric value.' };
+                }
+
+                // Absolute zero checking
+                const minAllowed = ABSOLUTE_ZERO[unit];
+                // Allow a slight precision threshold for exact boundary comparisons
+                if (num < minAllowed - 0.0001) {
+                    if (unit === 'celsius') {
+                        return { valid: false, message: 'Temperature cannot be below absolute zero (-273.15°C).' };
+                    } else if (unit === 'fahrenheit') {
+                        return { valid: false, message: 'Temperature cannot be below absolute zero (-459.67°F).' };
+                    } else {
+                        return { valid: false, message: 'Temperature cannot be below absolute zero (0 K).' };
+                    }
+                }
+
+                return { valid: true, value: num };
+            }
+
+            function displayError(msg) {
+                errorText.textContent = msg;
+                errorMessage.classList.add('visible');
+                inputContainer.classList.add('has-error');
+            }
+
+            function clearError() {
+                errorMessage.classList.remove('visible');
+                inputContainer.classList.remove('has-error');
+            }
+
+            // Update unit label indicator on primary input
+            function updateUnitSuffix() {
+                const unit = inputUnit.value;
+                if (unit === 'celsius') activeUnitSuffix.textContent = '°C';
+                else if (unit === 'fahrenheit') activeUnitSuffix.textContent = '°F';
+                else activeUnitSuffix.textContent = 'K';
+
+                // Update active highlight card
+                cardCelsius.classList.toggle('is-active', unit === 'celsius');
+                cardFahrenheit.classList.toggle('is-active', unit === 'fahrenheit');
+                cardKelvin.classList.toggle('is-active', unit === 'kelvin');
+            }
+
+            // Temperature visual position & status interpretation
+            function updateTemperatureStatus(celsiusVal) {
+                // Approximate position on realistic weather & boiling scale:
+                // -273.15°C to 120°C
+                const minDomain = -50;
+                const maxDomain = 110;
+                let percentage;
+
+                if (celsiusVal <= -273.15) {
+                    percentage = 0;
+                } else if (celsiusVal <= minDomain) {
+                    percentage = 5;
+                } else if (celsiusVal >= maxDomain) {
+                    percentage = 98;
+                } else {
+                    percentage = 5 + ((celsiusVal - minDomain) / (maxDomain - minDomain)) * 90;
+                }
+
+                scaleMarker.style.left = `${Math.min(Math.max(percentage, 2), 98)}%`;
+
+                // Status text and qualitative interpretation based on Celsius equivalent
+                statusBadge.classList.add('highlight');
+                setTimeout(() => statusBadge.classList.remove('highlight'), 300);
+
+                if (celsiusVal <= -273.14) {
+                    statusIcon.textContent = '🌌';
+                    statusText.textContent = 'Absolute Zero (Theoretical Minimum)';
+                } else if (celsiusVal < 0) {
+                    statusIcon.textContent = '❄';
+                    statusText.textContent = 'Freezing / Sub-zero temperature';
+                } else if (celsiusVal <= 15) {
+                    statusIcon.textContent = '🧥';
+                    statusText.textContent = 'Cool temperature';
+                } else if (celsiusVal <= 27) {
+                    statusIcon.textContent = '○';
+                    statusText.textContent = 'Comfortable moderate temperature';
+                } else if (celsiusVal <= 38) {
+                    statusIcon.textContent = '☀';
+                    statusText.textContent = 'Warm to hot temperature';
+                } else if (celsiusVal < 100) {
+                    statusIcon.textContent = '🔥';
+                    statusText.textContent = 'Very hot temperature';
+                } else {
+                    statusIcon.textContent = '♨';
+                    statusText.textContent = 'Boiling point or above';
+                }
+            }
+
+            // Display results with animation
+            function displayResults(c, f, k) {
+                valCelsius.textContent = `${formatNum(c)}°C`;
+                valFahrenheit.textContent = `${formatNum(f)}°F`;
+                valKelvin.textContent = `${formatNum(k)} K`;
+
+                [valCelsius, valFahrenheit, valKelvin].forEach(el => {
+                    el.classList.remove('pop');
+                    void el.offsetWidth; // retrigger reflow
+                    el.classList.add('pop');
+                });
+
+                updateTemperatureStatus(c);
+            }
+
+            // Core conversion coordinator
+            function convertTemperature() {
+                const unit = inputUnit.value;
+                const validation = validateInput(tempInput.value, unit);
+
+                if (!validation.valid) {
+                    displayError(validation.message);
+                    return;
+                }
+
+                clearError();
+                const value = validation.value;
+                let c, f, k;
+
+                if (unit === 'celsius') {
+                    c = value;
+                    f = celsiusToFahrenheit(c);
+                    k = celsiusToKelvin(c);
+                } else if (unit === 'fahrenheit') {
+                    f = value;
+                    c = fahrenheitToCelsius(f);
+                    k = fahrenheitToKelvin(f);
+                } else {
+                    k = value;
+                    c = kelvinToCelsius(k);
+                    f = kelvinToFahrenheit(k);
+                }
+
+                displayResults(c, f, k);
+                addRecentRecord(value, unit, c, f, k);
+            }
+
+            // Recent history management
+            function addRecentRecord(inputVal, inputU, c, f, k) {
+                let labelFrom = '';
+                let labelTo = '';
+
+                if (inputU === 'celsius') {
+                    labelFrom = `${formatNum(inputVal)}°C`;
+                    labelTo = `${formatNum(f)}°F`;
+                } else if (inputU === 'fahrenheit') {
+                    labelFrom = `${formatNum(inputVal)}°F`;
+                    labelTo = `${formatNum(c)}°C`;
+                } else {
+                    labelFrom = `${formatNum(inputVal)} K`;
+                    labelTo = `${formatNum(c)}°C`;
+                }
+
+                const entryText = `${labelFrom} → ${labelTo}`;
+
+                // Avoid exact immediate duplicate
+                if (recentHistory.length > 0 && recentHistory[0].text === entryText) return;
+
+                recentHistory.unshift({ val: inputVal, unit: inputU, text: entryText });
+                if (recentHistory.length > 3) recentHistory.pop();
+
+                renderRecentHistory();
+            }
+
+            function renderRecentHistory() {
+                recentList.innerHTML = '';
+                recentHistory.forEach(item => {
+                    const pill = document.createElement('span');
+                    pill.className = 'recent-item';
+                    pill.textContent = item.text;
+                    pill.dataset.val = item.val;
+                    pill.dataset.unit = item.unit;
+                    pill.tabIndex = 0;
+
+                    pill.addEventListener('click', () => {
+                        tempInput.value = item.val;
+                        inputUnit.value = item.unit;
+                        updateUnitSuffix();
+                        convertTemperature();
+                    });
+
+                    pill.addEventListener('keydown', (e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            pill.click();
+                        }
+                    });
+
+                    recentList.appendChild(pill);
+                });
+            }
+
+            // Real-time input handling
+            tempInput.addEventListener('input', function () {
+                const val = this.value;
+                const unit = inputUnit.value;
+                const res = validateInput(val, unit);
+
+                if (res.valid) {
+                    clearError();
+                } else {
+                    displayError(res.message);
+                }
+            });
+
+            // Enter key trigger
+            tempInput.addEventListener('keydown', function (e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    convertTemperature();
+                }
+            });
+
+            // Unit dropdown change
+            inputUnit.addEventListener('change', function () {
+                updateUnitSuffix();
+                const val = tempInput.value;
+                const res = validateInput(val, this.value);
+                if (res.valid) {
+                    clearError();
+                    convertTemperature();
+                } else {
+                    displayError(res.message);
+                }
+            });
+
+            // Swap button cycles units: Celsius -> Fahrenheit -> Kelvin -> Celsius
+            swapBtn.addEventListener('click', function () {
+                const units = ['celsius', 'fahrenheit', 'kelvin'];
+                const currentIndex = units.indexOf(inputUnit.value);
+                const nextIndex = (currentIndex + 1) % units.length;
+                inputUnit.value = units[nextIndex];
+
+                updateUnitSuffix();
+                convertTemperature();
+            });
+
+            // Primary Convert Button
+            convertBtn.addEventListener('click', function () {
+                convertTemperature();
+            });
+
+            // Modal Dialog handlers
+            openAboutBtn.addEventListener('click', () => {
+                aboutModal.classList.add('open');
+                openAboutBtn.setAttribute('aria-expanded', 'true');
+                closeModalBtn.focus();
+            });
+
+            function closeModal() {
+                aboutModal.classList.remove('open');
+                openAboutBtn.setAttribute('aria-expanded', 'false');
+                openAboutBtn.focus();
+            }
+
+            closeModalBtn.addEventListener('click', closeModal);
+
+            aboutModal.addEventListener('click', (e) => {
+                if (e.target === aboutModal) closeModal();
+            });
+
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && aboutModal.classList.contains('open')) {
+                    closeModal();
+                }
+            });
+
+            // Initial execution
+            updateUnitSuffix();
+            convertTemperature();
+            renderRecentHistory();
+
+        })();
+    </script>
+</body>
+
+</html>
